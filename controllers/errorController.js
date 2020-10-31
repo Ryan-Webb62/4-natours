@@ -6,6 +6,13 @@ const handleDuplicateFieldsDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+
+  const message = `Invalid input data.  ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
 const handelObjectIDErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
@@ -50,8 +57,12 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
 
-    if (error.kind === 'ObjectId') error = handelObjectIDErrorDB(error);
+    // (error.kind === 'ObjectId')
+
+    if (err.message.includes('Cast')) error = handelObjectIDErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error._message === 'Validation failed')
+      error = handleValidationErrorDB(error);
     sendErrorProd(error, res);
   }
 };
