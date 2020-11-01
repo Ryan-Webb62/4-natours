@@ -5,24 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach by Process ID",
-      "processId": "${command:PickProcess}",
-      "request": "attach",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "pwa-node"
-    },
-    {
-      "type": "node",
+      "command": "npm start",
+      "name": "Run npm start",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/server.js"
+      "type": "node-terminal"
     },
+
     {
+      "name": "Launch Chrome",
+      "request": "launch",
       "type": "pwa-chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
       "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}/public"
+      "webRoot": "${workspaceFolder}"
     }
   ]
 }
