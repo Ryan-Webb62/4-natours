@@ -24,6 +24,8 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   req.reqTime = new Date().toLocaleDateString();
+  // console.log(req.headers);
+
   next();
 });
 
