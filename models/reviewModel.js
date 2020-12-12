@@ -32,6 +32,15 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// Query Middelware
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'user',
+    select: '-__v',
+  });
+  next();
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
