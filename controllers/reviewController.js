@@ -16,16 +16,15 @@ exports.createReview = catchAsync(async (req, res, next) => {
   });
 });
 
-// Get all reviews
+// Get reviews
 exports.getAllReviews = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Review.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
+  // Build filter for get all reviews for one tour if tourId param
+  // is sent by user
+  let filter = {};
+  if (req.params.tourId) filter = { tour: req.params.tourId };
 
   // EXECUTE QUERY
-  const reviews = await features.query;
+  const reviews = await Review.find(filter);
 
   res.status(200).json({
     status: 'success',
