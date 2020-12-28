@@ -1,6 +1,7 @@
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-
+const APIFeatures = require('../utils/apiFeatures');
+const { Model } = require('mongoose');
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
@@ -40,5 +41,50 @@ exports.createOne = (Model) =>
     res.status(201).json({
       status: 'sucess',
       data: { tour: newDoc },
+    });
+  });
+
+exports.getOne = (Model, popOptions) =>
+  catchAsync(async (req, res, next) => {
+    let query = Model.findById(req.params.id);
+
+    if (popOptions) query = query.populate(popOptions);
+
+    const doc = await query;
+
+    if (!doc) {
+      return next(new AppError('No document found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: { doc },
+    });
+  });
+
+exports.getAll = (Model, popOptions) =>
+  catchAsync(async (req, res, next) => {
+    // To allow for nested GET reviews on tour
+    let filter = {};
+    if (req.params.tourId) filter = { tour: req.params.tourId };
+
+    const features = new APIFeatures(Model.find(filter), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    if (popOptions) features.query = features.query.populate(popOptions);
+
+    // EXECUTE QUERY
+    const doc = await features.query;
+
+    //SEND RESPONSE
+    res.status(200).json({
+      status: 'success',
+      results: doc.length,
+      data: {
+        data: doc,
+      },
     });
   });
