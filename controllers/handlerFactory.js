@@ -79,6 +79,9 @@ exports.getAll = (Model, popOptions) =>
     // EXECUTE QUERY
     const doc = await features.query;
 
+    // Adding explain() will send the details of the query to study performance
+    // const doc = await features.query.explain();
+
     //SEND RESPONSE
     res.status(200).json({
       status: 'success',
